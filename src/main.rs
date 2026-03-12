@@ -2,6 +2,8 @@ use std::error::Error;
 use winit::event_loop::EventLoop;
 mod rendering;
 use rendering::App;
+mod cpu;
+mod mmu;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let event_loop = EventLoop::new()?;
