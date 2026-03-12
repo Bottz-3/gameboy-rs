@@ -1,8 +1,8 @@
 use super::registers::registers::Registers;
 use crate::mmu::mmu::Mmu;
 
-struct Cpu {
-    registers: Registers,
+pub struct Cpu {
+    pub registers: Registers,
     mmu: Mmu,
     pc: u16,
     sp: u16,
