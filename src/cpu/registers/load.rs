@@ -1,4 +1,4 @@
-use super::registers::{Register, Registers};
+use super::{Register, Registers};
 
 // 8-bit load instructions
 impl Registers {

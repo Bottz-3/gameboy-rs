@@ -1,5 +1,5 @@
-use super::cpu::Cpu;
-use super::registers::registers::{Register, Registers};
+use crate::cpu::Cpu;
+use crate::cpu::Register;
 
 // Addition
 impl Cpu {
