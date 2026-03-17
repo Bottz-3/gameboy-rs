@@ -1,4 +1,4 @@
-use super::Registers;
+use super::{Register16, Registers};
 
 // These are the 4 general purpose 16-bit registers (from high to low):
 // BC, DE, HL, AF

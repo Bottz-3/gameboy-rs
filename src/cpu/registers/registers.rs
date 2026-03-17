@@ -20,6 +20,13 @@ pub struct Registers {
     pub(super) h: u8,
     pub(super) l: u8,
 }
+#[derive(Copy, Clone)]
+pub enum Register16 {
+    BC,
+    DE,
+    HL,
+    AF,
+}
 
 impl Registers {
     pub fn get(&self, reg: Register) -> u8 {

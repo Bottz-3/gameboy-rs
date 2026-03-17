@@ -4,4 +4,4 @@ mod combined;
 mod load;
 pub mod registers;
 
-pub use registers::{Register, Registers};
+pub use registers::{Register, Register16, Registers};
