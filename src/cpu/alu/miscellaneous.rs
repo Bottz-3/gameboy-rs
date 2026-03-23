@@ -27,46 +27,28 @@ impl Cpu {
         self.registers.set(Register::F, f);
     }
 }
-// Increment/decrement
+// Swap
 impl Cpu {
-    pub fn increment(&mut self, reg: Register) {
-        let a = self.registers.get(reg);
-        let res = a.wrapping_add(1);
+    pub fn swap_nibbles(&mut self, reg: Register) {
+        let reg_val = self.registers.get(reg);
+        let res = (reg_val << 4) | (reg_val >> 4);
 
-        self.registers.set(reg, res);
-
-        // set flags
         let mut f: u8 = 0;
         if res == 0 {
             f |= 1 << 7;
         }
-        // h flag
-        if (a & 0xF) == 0xF {
-            f |= 1 << 5;
-        }
-        // c flag
-        f |= self.registers.get(Register::F) & (1 << 4);
         self.registers.set(Register::F, f);
+        self.registers.set(reg, res);
     }
-    pub fn decrement(&mut self, reg: Register) {
-        let a = self.registers.get(reg);
-        let res = a.wrapping_sub(1);
+}
+// Shift right logical
+impl Cpu {
+    pub fn shift_right_logical(&mut self, reg: Register) {
+        let reg_val = self.registers.get(reg);
+        let b0 = reg_val & 1;
+        let b7 = (reg_val << 7) & 1;
+        let res = reg_val >> 1;
 
-        self.registers.set(reg, res);
-
-        // set flags
         let mut f: u8 = 0;
-        if res == 0 {
-            f |= 1 << 7;
-        }
-        // n flag (always has to be 1)
-        f |= 1 << 6;
-        // h flag
-        if (a & 0xF) == 0x0 {
-            f |= 1 << 5;
-        }
-        // c flag
-        f |= self.registers.get(Register::F) & (1 << 4);
-        self.registers.set(Register::F, f);
     }
 }
