@@ -41,14 +41,3 @@ impl Cpu {
         self.registers.set(reg, res);
     }
 }
-// Shift right logical
-impl Cpu {
-    pub fn shift_right_logical(&mut self, reg: Register) {
-        let reg_val = self.registers.get(reg);
-        let b0 = reg_val & 1;
-        let b7 = (reg_val << 7) & 1;
-        let res = reg_val >> 1;
-
-        let mut f: u8 = 0;
-    }
-}
