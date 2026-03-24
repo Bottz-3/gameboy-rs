@@ -3,9 +3,11 @@ use crate::{cpu::registers::Register16, mmu::mmu::Mmu};
 
 pub struct Cpu {
     pub registers: Registers,
-    mmu: Mmu,
-    pc: u16,
+    pub mmu: Mmu,
+    pub pc: u16,
     pub sp: u16,
+    pub ime: bool,
+    pub halted: bool,
 }
 
 impl Cpu {
