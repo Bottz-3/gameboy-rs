@@ -26,6 +26,7 @@ pub enum Register16 {
     DE,
     HL,
     AF,
+    SP,
 }
 
 impl Registers {

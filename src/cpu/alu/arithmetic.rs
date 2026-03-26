@@ -117,11 +117,8 @@ impl Cpu {
 
 // Increment/decrement
 impl Cpu {
-    pub fn increment(&mut self, reg: Register) {
-        let a = self.registers.get(reg);
-        let res = a.wrapping_add(1);
-
-        self.registers.set(reg, res);
+    pub fn increment(&mut self, val: u8) -> u8 {
+        let res = val.wrapping_add(1);
 
         // set flags
         let mut f: u8 = 0;
@@ -129,18 +126,16 @@ impl Cpu {
             f |= 1 << 7;
         }
         // h flag
-        if (a & 0xF) == 0xF {
+        if (val & 0xF) == 0xF {
             f |= 1 << 5;
         }
         // c flag
         f |= self.registers.get(Register::F) & (1 << 4);
         self.registers.set(Register::F, f);
+        res
     }
-    pub fn decrement(&mut self, reg: Register) {
-        let a = self.registers.get(reg);
-        let res = a.wrapping_sub(1);
-
-        self.registers.set(reg, res);
+    pub fn decrement(&mut self, val: u8) -> u8 {
+        let res = val.wrapping_sub(1);
 
         // set flags
         let mut f: u8 = 0;
@@ -150,11 +145,12 @@ impl Cpu {
         // n flag (always has to be 1)
         f |= 1 << 6;
         // h flag
-        if (a & 0xF) == 0x0 {
+        if (val & 0xF) == 0x0 {
             f |= 1 << 5;
         }
         // c flag
         f |= self.registers.get(Register::F) & (1 << 4);
         self.registers.set(Register::F, f);
+        res
     }
 }

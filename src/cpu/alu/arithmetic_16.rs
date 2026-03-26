@@ -24,6 +24,28 @@ impl Cpu {
         }
         self.registers.set(Register::F, f)
     }
+    pub fn add_sp16(&mut self) {
+        let hl = self.registers.get_hl();
+        let rr = self.sp;
+        let val = hl.wrapping_add(rr);
+
+        self.set16(Register16::HL, val);
+        // set flags
+        //
+        // set n to 0
+        let mut f = self.registers.get(Register::F);
+
+        f &= !(1 << 6);
+
+        if (hl & 0xFFF) + (rr & 0xFFF) > 0xFFF {
+            f |= 1 << 5;
+        }
+        // c flag
+        if (hl as u32) + (rr as u32) > 0xFFFF {
+            f |= 1 << 4;
+        }
+        self.registers.set(Register::F, f)
+    }
     pub fn add_sp(&mut self, e: i8) {
         let sp = self.sp;
         let val = (e as i16) as u16;
