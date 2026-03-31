@@ -15,6 +15,20 @@ impl Cpu {
         }
         self.registers.set(Register::F, f);
     }
+
+    pub fn rotate_left_circular_data(&mut self, data: u8) -> u8 {
+        let b7 = (data >> 7) & 1;
+
+        let res = data.rotate_left(1);
+
+        let mut f: u8 = 0;
+        // just need to do c flag
+        if b7 == 1 {
+            f |= 1 << 4;
+        }
+        self.registers.set(Register::F, f);
+        res
+    }
     pub fn rotate_right_circular(&mut self) {
         let a = self.registers.get(Register::A);
         let b7 = a & 1;
@@ -28,6 +42,19 @@ impl Cpu {
             f |= 1 << 4;
         }
         self.registers.set(Register::F, f);
+    }
+    pub fn rotate_right_circular_data(&mut self, data: u8) -> u8 {
+        let b7 = data & 1;
+
+        let res = data.rotate_right(1);
+
+        let mut f: u8 = 0;
+        // just need to do c flag
+        if b7 == 1 {
+            f |= 1 << 4;
+        }
+        self.registers.set(Register::F, f);
+        res
     }
     pub fn rotate_left_accum(&mut self) {
         let a = self.registers.get(Register::A);
@@ -60,7 +87,7 @@ impl Cpu {
         self.registers.set(Register::F, f);
     }
 }
-// Rotations for register
+// Rotations for register (circular)
 impl Cpu {
     pub fn rotate_left_register(&mut self, reg: Register) {
         let reg_val = self.registers.get(reg);
@@ -123,6 +150,25 @@ impl Cpu {
         }
         self.registers.set(Register::F, f);
     }
+    pub fn rotate_left_data(&mut self, data: u8) -> u8 {
+        let f = self.registers.get(Register::F);
+        let b7 = (data >> 7) & 1;
+
+        let res = (data << 1) | ((f >> 4) & 1);
+
+        let mut f: u8 = 0;
+
+        // just doing z and c flags.
+        if res == 0 {
+            f |= 1 << 7;
+        }
+
+        if b7 == 1 {
+            f |= 1 << 4;
+        }
+        self.registers.set(Register::F, f);
+        res
+    }
     pub fn rotate_right(&mut self, reg: Register) {
         let reg_val = self.registers.get(reg);
         let f = self.registers.get(Register::F);
@@ -142,5 +188,24 @@ impl Cpu {
             f |= 1 << 4;
         }
         self.registers.set(Register::F, f);
+    }
+    pub fn rotate_right_data(&mut self, data: u8) -> u8 {
+        let f = self.registers.get(Register::F);
+        let b0 = data & 1;
+
+        let res = (data >> 1) | (((f >> 4) & 1) << 7);
+
+        let mut f: u8 = 0;
+
+        // just doing z and c flags.
+        if res == 0 {
+            f |= 1 << 7;
+        }
+
+        if b0 == 1 {
+            f |= 1 << 4;
+        }
+        self.registers.set(Register::F, f);
+        res
     }
 }

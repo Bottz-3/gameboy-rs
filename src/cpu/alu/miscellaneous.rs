@@ -40,4 +40,14 @@ impl Cpu {
         self.registers.set(Register::F, f);
         self.registers.set(reg, res);
     }
+    pub fn swap_nibbles_data(&mut self, data: u8) -> u8 {
+        let res = (data << 4) | (data >> 4);
+
+        let mut f: u8 = 0;
+        if res == 0 {
+            f |= 1 << 7;
+        }
+        self.registers.set(Register::F, f);
+        res
+    }
 }

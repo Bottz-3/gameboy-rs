@@ -85,22 +85,19 @@ impl Cpu {
                 let c = (self.registers.get(Register::F) >> 4) & 1;
                 self.ret_conditional(c == 1);
             }
-            0xE8 => self.add_sp(self.mmu.read(self.pc) as i8),
+            0xE8 => {
+                let data = self.fetch_u8();
+                self.add_sp(data as i8);
+            }
             0xF8 => {
-                let e = self.mmu.read(self.pc) as i8;
-                self.set16(Register16::HL, self.sp + e as u16);
+                let e = self.fetch_u8() as i8;
+                let val = self.sp.wrapping_add_signed(e as i16);
+                self.set16(Register16::HL, val);
             }
             0xC9 => self.ret(),
             0xD9 => self.ret_from_interrupt(),
-            0xE9 => {
-                let hl = self.get16(Register16::HL);
-                self.jump_conditional(hl == 1);
-            }
-            0xF9 => {
-                let addr = self.fetch_u16();
-                let data = self.mmu.read(addr);
-                self.registers.load_register_data(Register::A, data);
-            }
+            0xE9 => self.pc = self.registers.get_hl(),
+            0xF9 => self.sp = self.get16(Register16::HL),
             0xCA => {
                 let z = (self.registers.get(Register::F) >> 7) & 1;
                 self.jump_conditional(z == 1);
@@ -118,7 +115,10 @@ impl Cpu {
                 let data = self.mmu.read(addr);
                 self.registers.load_register_data(Register::A, data);
             }
-            0xCB => self.decode_prefix(),
+            0xCB => {
+                let next_op = self.fetch_u8();
+                self.decode_cb(next_op);
+            }
             0xFB => self.ime = true,
             0xCC => {
                 let z = (self.registers.get(Register::F) >> 7) & 1;
