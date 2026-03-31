@@ -61,7 +61,7 @@ impl Cpu {
 }
 // Test, reset and set bit
 impl Cpu {
-    pub fn reset_bit(&mut self, bit: u8, reg: Register) {
+    pub fn test_bit(&mut self, bit: u8, reg: Register) {
         let reg_val = self.registers.get(reg);
         let mut f = self.registers.get(Register::F);
 
