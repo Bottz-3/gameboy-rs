@@ -4,6 +4,7 @@ pub mod decode_cb;
 pub mod decode_cb_bit;
 pub mod decode_cb_misc;
 pub mod decode_cb_res;
+pub mod decode_cb_set;
 pub mod decode_cf;
 pub mod decode_loads;
 pub mod decode_misc;
