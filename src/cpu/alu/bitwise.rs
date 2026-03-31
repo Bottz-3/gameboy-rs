@@ -61,11 +61,23 @@ impl Cpu {
 }
 // Test, reset and set bit
 impl Cpu {
-    pub fn test_bit(&mut self, bit: u8, reg: Register) {
+    pub fn reset_bit(&mut self, bit: u8, reg: Register) {
         let reg_val = self.registers.get(reg);
         let mut f = self.registers.get(Register::F);
 
         if (reg_val >> bit) & 1 == 0 {
+            f |= 1 << 7;
+        } else {
+            f &= !(1 << 7);
+        }
+        f |= 1 << 5;
+        f &= !(1 << 6);
+        self.registers.set(Register::F, f);
+    }
+    pub fn test_bit_data(&mut self, bit: u8, data: u8) {
+        let mut f = self.registers.get(Register::F);
+
+        if (data >> bit) & 1 == 0 {
             f |= 1 << 7;
         } else {
             f &= !(1 << 7);
@@ -81,9 +93,15 @@ impl Cpu {
 
         self.registers.set(reg, res);
     }
+    pub fn reset_bit_data(&mut self, bit: u8, data: u8) -> u8 {
+        data & !(1 << bit)
+    }
     pub fn set_bit(&mut self, bit: u8, reg: Register) {
         let reg_val = self.registers.get(reg);
         let res = reg_val | (1 << bit);
         self.registers.set(reg, res);
+    }
+    pub fn set_bit_data(&mut self, bit: u8, data: u8) -> u8 {
+        data | (1 << bit)
     }
 }
