@@ -3,6 +3,7 @@ use winit::event_loop::EventLoop;
 mod rendering;
 use rendering::App;
 mod cpu;
+mod gb_loop;
 mod mmu;
 
 fn main() -> Result<(), Box<dyn Error>> {
