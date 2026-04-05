@@ -6,3 +6,4 @@ pub mod registers;
 pub mod stack;
 pub use cpu::Cpu;
 pub use registers::registers::Register;
+pub mod interrupt_handler;
