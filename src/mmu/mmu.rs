@@ -1,5 +1,5 @@
 pub struct Mmu {
-    rom: Vec<u8>,
+    rom: [u8],
     vram: [u8; 8192],
     wram: [u8; 8192],
     hram: [u8; 256],
