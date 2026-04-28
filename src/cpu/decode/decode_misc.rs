@@ -3,83 +3,109 @@ use crate::cpu::{Cpu, Register};
 
 // Doing it in groups of register
 impl Cpu {
-    pub fn decode_misc(&mut self, opcode: u8) {
+    pub fn decode_misc(&mut self, opcode: u8) -> u32 {
         match opcode {
-            0x00 => {} // NOP
-            0x10 => {} // Not implemented for MVP (STOP instruc.)
+            0x00 => 4 // NOP
+            0x10 => 4 // Not implemented for MVP (STOP instruc.)
             0x20 => {
                 let z = (self.registers.get(Register::F) >> 7) & 1;
-                self.jump_relative_conditional(z == 0);
+                self.jump_relative_conditional(z == 0)
             }
             0x30 => {
                 let c = (self.registers.get(Register::F) >> 4) & 1;
-                self.jump_relative_conditional(c == 0);
+                self.jump_relative_conditional(c == 0)
             }
             // loads
             0x01 => {
                 let data = self.fetch_u16();
-                self.registers.set_bc(data)
+                self.registers.set_bc(data);
+                12
             }
             0x11 => {
                 let data = self.fetch_u16();
-                self.registers.set_de(data)
+                self.registers.set_de(data);
+                12
             }
             0x21 => {
                 let data = self.fetch_u16();
-                self.registers.set_hl(data)
+                self.registers.set_hl(data);
+                12
             }
-            0x31 => self.sp = self.fetch_u16(),
+            0x31 => {
+                self.sp = self.fetch_u16();
+                12
+            },
             // indirect(?) loads
             0x02 => {
                 let addr = self.registers.get_bc();
                 self.mmu.write(addr, self.registers.get(Register::A));
+                8
             }
             0x12 => {
                 let addr = self.registers.get_de();
                 self.mmu.write(addr, self.registers.get(Register::A));
+                8
             }
             0x22 => {
                 let addr = self.registers.get_hl();
                 self.mmu.write(addr, self.registers.get(Register::A));
                 self.registers.set_hl(addr.wrapping_add(1));
+                8
             }
             0x32 => {
                 let addr = self.registers.get_hl();
                 self.mmu.write(addr, self.registers.get(Register::A));
                 self.registers.set_hl(addr.wrapping_sub(1));
+                8
             }
             // 16-bit increments
-            0x03 => self
+            0x03 => {
+                self
                 .registers
-                .set_bc(self.registers.get_bc().wrapping_add(1)),
-            0x13 => self
-                .registers
-                .set_de(self.registers.get_de().wrapping_add(1)),
-            0x23 => self
-                .registers
-                .set_hl(self.registers.get_hl().wrapping_add(1)),
-            0x33 => self.sp = self.sp.wrapping_add(1),
+                .set_bc(self.registers.get_bc().wrapping_add(1));
+                8
+            },
+            0x13 => {
+                self
+                    .registers
+                    .set_de(self.registers.get_de().wrapping_add(1))
+                8
+            },
+            0x23 => {
+                self
+                    .registers
+                    .set_hl(self.registers.get_hl().wrapping_add(1))
+                8
+            },
+            0x33 => {
+                self.sp = self.sp.wrapping_add(1);
+                8
+            },
             // 8-bit increments
             0x04 => {
                 let reg_val = self.registers.get(Register::B);
                 let increment = self.increment(reg_val);
                 self.registers.set(Register::B, increment);
+                4
             }
             0x14 => {
                 let reg_val = self.registers.get(Register::D);
                 let increment = self.increment(reg_val);
                 self.registers.set(Register::D, increment);
+                4
             }
             0x24 => {
                 let reg_val = self.registers.get(Register::H);
                 let increment = self.increment(reg_val);
                 self.registers.set(Register::H, increment);
+                4
             }
             0x34 => {
                 let addr = self.registers.get_hl();
                 let reg_val = self.mmu.read(addr);
                 let increment = self.increment(reg_val);
                 self.mmu.write(addr, increment);
+                12
             }
             // 8-bit decrements
             0x05 => {

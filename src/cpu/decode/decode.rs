@@ -1,7 +1,7 @@
 use crate::cpu::Cpu;
 
 impl Cpu {
-    pub fn decode(&mut self, opcode: u8) {
+    pub fn decode(&mut self, opcode: u8) -> u32 {
         match opcode {
             0x00..=0x3F => self.decode_misc(opcode),
             0x40..=0x7F => self.decode_loads(opcode),

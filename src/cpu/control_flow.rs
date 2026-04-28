@@ -14,12 +14,14 @@ impl Cpu {
         self.pc += 1;
         self.pc = self.pc.wrapping_add_signed(e as i16);
     }
-    pub fn jump_relative_conditional(&mut self, cond: bool) {
+    pub fn jump_relative_conditional(&mut self, cond: bool) -> u32 {
         let e = self.mmu.read(self.pc) as i8;
         self.pc += 1;
         if cond {
             self.pc = self.pc.wrapping_add_signed(e as i16);
+            return 12;
         }
+        8
     }
 }
 // Call and call cond
