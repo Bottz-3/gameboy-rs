@@ -24,23 +24,28 @@ impl Cpu {
         // 0xFF0F = IF
 
         if pending & 0x01 != 0 {
-            self.mmu.write(0xFF0F, self.mmu.read(0xFF0F) & !0x01);
+            let read = self.mmu.read(0xFF0F);
+            self.mmu.write(0xFF0F, read & !0x01);
             // vblank interrupt
             self.call_interrupt(0x40);
         } else if pending & 0x02 != 0 {
-            self.mmu.write(0xFF0F, self.mmu.read(0xFF0F) & !0x02);
+            let read = self.mmu.read(0xFF0F);
+            self.mmu.write(0xFF0F, read & !0x02);
             // lcd interrupt
             self.call_interrupt(0x48);
         } else if pending & 0x04 != 0 {
-            self.mmu.write(0xFF0F, self.mmu.read(0xFF0F) & !0x04);
+            let read = self.mmu.read(0xFF0F);
+            self.mmu.write(0xFF0F, read & !0x04);
             // timer
             self.call_interrupt(0x50);
         } else if pending & 0x08 != 0 {
-            self.mmu.write(0xFF0F, self.mmu.read(0xFF0F) & !0x08);
+            let read = self.mmu.read(0xFF0F);
+            self.mmu.write(0xFF0F, read & !0x08);
             // serial
             self.call_interrupt(0x58);
         } else if pending & 0x10 != 0 {
-            self.mmu.write(0xFF0F, self.mmu.read(0xFF0F) & !0x10);
+            let read = self.mmu.read(0xFF0F);
+            self.mmu.write(0xFF0F, read & !0x10);
             // joypad
             self.call_interrupt(0x60);
         }
