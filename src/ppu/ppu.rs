@@ -83,3 +83,49 @@ impl Mmu {
         }
     }
 }
+
+impl Ppu {
+    pub fn step(&mut self, cycles: u32) -> bool {
+        self.cycles += cycles;
+        let mut vblank = false;
+        match self.mode {
+            2 => {
+                if self.cycles >= 80 {
+                    self.cycles -= 80;
+                    self.mode = 3;
+                }
+            }
+            3 => {
+                // hblank
+                if self.cycles >= 172 {
+                    self.cycles -= 172;
+                    self.mode = 0;
+                }
+            }
+            0 => {
+                if self.cycles >= 204 {
+                    self.cycles -= 204;
+                    self.ly += 1;
+                    if self.ly > 144 {
+                        self.mode = 1; //vblank
+                        vblank = true;
+                    } else {
+                        self.mode = 2;
+                    }
+                }
+            }
+            4 => {
+                if self.cycles >= 456 {
+                    self.cycles -= 456;
+                    self.ly += 1;
+                    if self.ly > 153 {
+                        self.ly = 0;
+                        self.mode = 2;
+                    }
+                }
+            }
+            _ => {}
+        }
+        vblank
+    }
+}
