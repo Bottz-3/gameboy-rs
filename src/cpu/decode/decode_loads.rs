@@ -1,5 +1,3 @@
-use std::f64::consts::LN_10;
-
 use crate::cpu::{Cpu, Register};
 
 impl Cpu {

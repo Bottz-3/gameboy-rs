@@ -1,7 +1,7 @@
 use crate::cpu::{Cpu, Register};
 
 impl Cpu {
-    pub fn decode_cb_bit(&mut self, opcode: u8) {
+    pub fn decode_cb_bit(&mut self, opcode: u8) -> u32 {
         match opcode {
             0x40 => self.test_bit(0, Register::B),
             0x50 => self.test_bit(2, Register::B),
