@@ -4,10 +4,12 @@ impl Cpu {
     pub fn jump(&mut self) {
         self.pc = self.fetch_u16();
     }
-    pub fn jump_conditional(&mut self, cond: bool) {
+    pub fn jump_conditional(&mut self, cond: bool) -> u32 {
         if cond {
             self.pc = self.fetch_u16();
+            return 16;
         }
+        12
     }
     pub fn jump_relative(&mut self) {
         let e = self.mmu.read(self.pc) as i8;
@@ -39,7 +41,7 @@ impl Cpu {
         self.pc = nn;
     }
 
-    pub fn call_conditional(&mut self, cond: bool) {
+    pub fn call_conditional(&mut self, cond: bool) -> u32 {
         let nn = self.fetch_u16();
 
         if cond {
@@ -51,7 +53,10 @@ impl Cpu {
             self.sp -= 1;
             self.mmu.write(self.sp, lsb);
             self.pc = nn;
+
+            return 24;
         }
+        12
     }
 }
 
@@ -64,14 +69,16 @@ impl Cpu {
         self.sp += 1;
         self.pc = (msb << 8) | lsb;
     }
-    pub fn ret_conditional(&mut self, cond: bool) {
+    pub fn ret_conditional(&mut self, cond: bool) -> u32 {
         if cond {
             let lsb = self.mmu.read(self.sp) as u16;
             self.sp += 1;
             let msb = self.mmu.read(self.sp) as u16;
             self.sp += 1;
             self.pc = (msb << 8) | lsb;
+            return 20;
         }
+        8
     }
     pub fn ret_from_interrupt(&mut self) {
         self.ret();
