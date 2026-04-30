@@ -34,7 +34,7 @@ impl Cpu {
             0x31 => {
                 self.sp = self.fetch_u16();
                 12
-            },
+            }
             // indirect(?) loads
             0x02 => {
                 let addr = self.registers.get_bc();
@@ -60,79 +60,76 @@ impl Cpu {
             }
             // 16-bit increments
             0x03 => {
-                self
-                .registers
-                .set_bc(self.registers.get_bc().wrapping_add(1));
+                self.registers
+                    .set_bc(self.registers.get_bc().wrapping_add(1));
                 8
-            },
+            }
             0x13 => {
-                self
-                    .registers
-                    .set_de(self.registers.get_de().wrapping_add(1))
+                self.registers
+                    .set_de(self.registers.get_de().wrapping_add(1));
                 8
-            },
+            }
             0x23 => {
-                self
-                    .registers
-                    .set_hl(self.registers.get_hl().wrapping_add(1))
+                self.registers
+                    .set_hl(self.registers.get_hl().wrapping_add(1));
                 8
-            },
+            }
             0x33 => {
                 self.sp = self.sp.wrapping_add(1);
                 8
-            },
+            }
             // 8-bit increments
             0x04 => {
                 let reg_val = self.registers.get(Register::B);
                 let increment = self.increment(reg_val);
                 self.registers.set(Register::B, increment);
                 4
-            },
+            }
             0x14 => {
                 let reg_val = self.registers.get(Register::D);
                 let increment = self.increment(reg_val);
                 self.registers.set(Register::D, increment);
                 4
-            },
+            }
             0x24 => {
                 let reg_val = self.registers.get(Register::H);
                 let increment = self.increment(reg_val);
                 self.registers.set(Register::H, increment);
                 4
-            },
+            }
             0x34 => {
                 let addr = self.registers.get_hl();
                 let reg_val = self.mmu.read(addr);
                 let increment = self.increment(reg_val);
                 self.mmu.write(addr, increment);
                 12
-            },
+            }
             // 8-bit decrements
             0x05 => {
                 let reg_val = self.registers.get(Register::B);
                 let decrement = self.decrement(reg_val);
                 self.registers.set(Register::B, decrement);
                 4
-            },
+            }
             0x15 => {
                 let reg_val = self.registers.get(Register::D);
                 let decrement = self.decrement(reg_val);
                 self.registers.set(Register::D, decrement);
                 4
-            },
+            }
             0x25 => {
                 let reg_val = self.registers.get(Register::H);
                 let decrement = self.decrement(reg_val);
                 self.registers.set(Register::H, decrement);
                 4
-            },
+            }
             0x35 => {
                 let addr = self.registers.get_hl();
                 let reg_val = self.mmu.read(addr);
                 let decrement = self.decrement(reg_val);
                 self.mmu.write(addr, decrement);
                 4
-            },
+            }
             0x06 => {
                 let data = self.fetch_u8();
                 self.registers.load_register_data(Register::B, data);
@@ -157,20 +154,19 @@ impl Cpu {
             0x07 => {
                 self.rotate_left_circular();
                 4
-            },
+            }
             0x17 => {
                 self.rotate_left_accum();
                 4
-
-            },
+            }
             0x27 => {
                 self.registers.daa();
                 4
-            },
+            }
             0x37 => {
                 self.registers.scf();
                 4
-            },
+            }
             0x08 => {
                 let addr = self.fetch_u16();
                 self.mmu.write(addr, (self.sp & 0xFF) as u8);
@@ -180,7 +176,7 @@ impl Cpu {
             0x18 => {
                 self.jump_relative();
                 12
-            },
+            }
             0x28 => {
                 let z = (self.registers.get(Register::F) >> 7) & 1;
                 self.jump_relative_conditional(z != 0)
@@ -192,19 +188,19 @@ impl Cpu {
             0x09 => {
                 self.add_16(Register16::BC);
                 8
-            },
+            }
             0x19 => {
                 self.add_16(Register16::DE);
                 8
-            },
+            }
             0x29 => {
                 self.add_16(Register16::HL);
                 8
-            },
+            }
             0x39 => {
                 self.add_16(Register16::SP);
                 8
-            },
+            }
             0x0A => {
                 let data = self.mmu.read(self.registers.get_bc());
                 self.registers.load_register_data(Register::A, data);
@@ -230,27 +226,24 @@ impl Cpu {
                 8
             }
             0x0B => {
-                self
-                    .registers
+                self.registers
                     .set_bc(self.registers.get_bc().wrapping_sub(1));
                 8
-            },
+            }
             0x1B => {
-                self
-                    .registers
+                self.registers
                     .set_de(self.registers.get_de().wrapping_sub(1));
                 8
-            },
+            }
             0x2B => {
-                self
-                    .registers
+                self.registers
                     .set_hl(self.registers.get_hl().wrapping_sub(1));
                 8
-            },
+            }
             0x3B => {
                 self.sp = self.sp.wrapping_sub(1);
                 8
-            },
+            }
             0x0C => {
                 let reg = self.registers.get(Register::C);
                 let increment = self.increment(reg);
@@ -322,19 +315,19 @@ impl Cpu {
             0x0F => {
                 self.rotate_right_circular();
                 4
-            },
+            }
             0x1F => {
                 self.rotate_right_accum();
                 4
-            },
+            }
             0x2F => {
                 self.registers.cpl();
                 4
-            },
+            }
             0x3F => {
                 self.registers.ccf();
                 4
-            },
+            }
             _ => panic!("CATASTROPHIC ERROR! OPCODE NOT IN THIS RANGE SHOULD NOT RUN HERE AT ALL!"),
         }
     }

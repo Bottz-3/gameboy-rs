@@ -29,9 +29,9 @@ impl Cpu {
                 4
             }
             0x61 => {
-                self.registers.load_register(Register::H, Register::C)
+                self.registers.load_register(Register::H, Register::C);
                 4
-            },
+            }
             0x71 => {
                 let addr = self.registers.get_hl();
                 self.mmu.write(addr, self.registers.get(Register::C));
@@ -40,15 +40,15 @@ impl Cpu {
             0x42 => {
                 self.registers.load_register(Register::B, Register::D);
                 4
-            },
+            }
             0x52 => {
                 self.registers.load_register(Register::D, Register::D);
                 4
-            },
+            }
             0x62 => {
                 self.registers.load_register(Register::H, Register::D);
                 4
-            },
+            }
             0x72 => {
                 let addr = self.registers.get_hl();
                 self.mmu.write(addr, self.registers.get(Register::D));
@@ -57,15 +57,15 @@ impl Cpu {
             0x43 => {
                 self.registers.load_register(Register::B, Register::E);
                 4
-            },
+            }
             0x53 => {
                 self.registers.load_register(Register::D, Register::E);
                 4
-            },
+            }
             0x63 => {
                 self.registers.load_register(Register::H, Register::E);
                 4
-            },
+            }
             0x73 => {
                 let addr = self.registers.get_hl();
                 self.mmu.write(addr, self.registers.get(Register::E));
@@ -74,15 +74,15 @@ impl Cpu {
             0x44 => {
                 self.registers.load_register(Register::B, Register::H);
                 4
-            },
+            }
             0x54 => {
                 self.registers.load_register(Register::D, Register::H);
                 4
-            },
+            }
             0x64 => {
                 self.registers.load_register(Register::H, Register::H);
                 4
-            },
+            }
             0x74 => {
                 let addr = self.registers.get_hl();
                 self.mmu.write(addr, self.registers.get(Register::H));
@@ -91,52 +91,52 @@ impl Cpu {
             0x45 => {
                 self.registers.load_register(Register::B, Register::L);
                 4
-            },
+            }
             0x55 => {
                 self.registers.load_register(Register::D, Register::L);
                 4
-            },
+            }
             0x65 => {
                 self.registers.load_register(Register::H, Register::L);
                 4
-            },
+            }
             0x75 => {
                 let addr = self.registers.get_hl();
                 self.mmu.write(addr, self.registers.get(Register::L));
                 8
-            },
+            }
             0x46 => {
                 let data = self.mmu.read(self.registers.get_hl());
                 self.registers.load_register_data(Register::B, data);
                 8
-            },
+            }
             0x56 => {
                 let data = self.mmu.read(self.registers.get_hl());
                 self.registers.load_register_data(Register::D, data);
                 8
-            },
+            }
             0x66 => {
                 let data = self.mmu.read(self.registers.get_hl());
                 self.registers.load_register_data(Register::H, data);
                 8
-            },
+            }
             0x76 => {
                 self.halted = true;
                 // Should I do the actual halt stuff here?
                 4
-            },
+            }
             0x47 => {
                 self.registers.load_register(Register::B, Register::A);
                 4
-            },
+            }
             0x57 => {
                 self.registers.load_register(Register::D, Register::A);
                 4
-            },
+            }
             0x67 => {
                 self.registers.load_register(Register::H, Register::A);
                 4
-            },
+            }
             0x77 => {
                 let data = self.registers.get(Register::A);
                 self.mmu.write(self.registers.get_hl(), data);
@@ -145,99 +145,99 @@ impl Cpu {
             0x48 => {
                 self.registers.load_register(Register::C, Register::B);
                 4
-            },
+            }
             0x58 => {
                 self.registers.load_register(Register::E, Register::B);
                 4
-            },
+            }
             0x68 => {
                 self.registers.load_register(Register::L, Register::B);
                 4
-            },
+            }
             0x78 => {
                 self.registers.load_register(Register::A, Register::B);
                 4
-            },
+            }
             0x49 => {
                 self.registers.load_register(Register::C, Register::C);
                 4
-            },
+            }
             0x59 => {
                 self.registers.load_register(Register::E, Register::C);
                 4
-            },
+            }
             0x69 => {
                 self.registers.load_register(Register::L, Register::C);
                 4
-            },
+            }
             0x79 => {
                 self.registers.load_register(Register::A, Register::C);
                 4
-            },
+            }
             0x4A => {
                 self.registers.load_register(Register::C, Register::D);
                 4
-            },
+            }
             0x5A => {
                 self.registers.load_register(Register::E, Register::D);
                 4
-            },
+            }
             0x6A => {
                 self.registers.load_register(Register::L, Register::D);
                 4
-            },
+            }
             0x7A => {
                 self.registers.load_register(Register::A, Register::D);
                 4
-            },
+            }
             0x4B => {
                 self.registers.load_register(Register::C, Register::E);
                 4
-            },
+            }
             0x5B => {
                 self.registers.load_register(Register::E, Register::E);
                 4
-            },
+            }
             0x6B => {
                 self.registers.load_register(Register::L, Register::E);
                 4
-            },
+            }
             0x7B => {
                 self.registers.load_register(Register::A, Register::E);
                 4
-            },
+            }
             0x4C => {
                 self.registers.load_register(Register::C, Register::H);
                 4
-            },
+            }
             0x5C => {
                 self.registers.load_register(Register::E, Register::H);
                 4
-            },
+            }
             0x6C => {
                 self.registers.load_register(Register::L, Register::H);
                 4
-            },
+            }
             0x7C => {
                 self.registers.load_register(Register::A, Register::H);
                 4
-            },
+            }
             0x4D => {
                 self.registers.load_register(Register::C, Register::L);
                 4
-            },
+            }
             0x5D => {
                 self.registers.load_register(Register::E, Register::L);
                 4
-            },
+            }
             0x6D => {
                 self.registers.load_register(Register::L, Register::L);
                 4
-            },
+            }
             0x7D => {
                 self.registers.load_register(Register::A, Register::L);
                 4
-            },
+            }
             0x4E => {
                 let data = self.mmu.read(self.registers.get_hl());
                 self.registers.load_register_data(Register::C, data);
@@ -261,19 +261,19 @@ impl Cpu {
             0x4F => {
                 self.registers.load_register(Register::C, Register::A);
                 4
-            },
+            }
             0x5F => {
                 self.registers.load_register(Register::E, Register::A);
                 4
-            },
+            }
             0x6F => {
                 self.registers.load_register(Register::L, Register::A);
                 4
-            },
+            }
             0x7F => {
                 self.registers.load_register(Register::A, Register::A);
                 4
-            },
+            }
 
             _ => panic!("CATASTROPHIC ERROR! OPCODE NOT IN THIS RANGE SHOULD NOT RUN HERE AT ALL!"),
         }
