@@ -11,28 +11,28 @@ impl Registers {
         let c = (self.get(Register::F) >> 4) & 1;
         if n == 1 {
             if h == 1 {
-                adj += 0x6;
+                adj += 0x06;
             }
             if c == 1 {
                 adj += 0x60;
-                // set c flag
-                f |= 1 << 4;
             }
             a = a.wrapping_sub(adj);
         } else {
-            if h == 1 || (a & 0xf) > 0x9 {
-                adj += 0x6;
+            if h == 1 || (a & 0x0F) > 0x09 {
+                adj += 0x06;
             }
             if c == 1 || a > 0x99 {
                 adj += 0x60;
+                f |= 1 << 4;
             }
             a = a.wrapping_add(adj);
         }
-
+        // z and h clear
+        f &= !(1 << 7);
+        f &= !(1 << 5); // clearing h here
         if a == 0 {
             f |= 1 << 7;
         }
-        f &= !(1 << 5); // clearing h here
 
         self.set(Register::A, a);
         self.set(Register::F, f);
@@ -48,7 +48,7 @@ impl Registers {
         f |= 1 << 6;
         f |= 1 << 5;
 
-        self.set(Register::F, f);
+        self.set(Register::F, f & 0xF0);
         self.set(Register::A, a);
     }
 }

@@ -102,25 +102,29 @@ impl Cpu {
             0xC6 => {
                 let addr = self.registers.get_hl();
                 let data = self.mmu.read(addr);
-                self.set_bit_data(0, data);
+                let res = self.set_bit_data(0, data);
+                self.mmu.write(addr, res, self.pc);
                 16
             }
             0xD6 => {
                 let addr = self.registers.get_hl();
                 let data = self.mmu.read(addr);
-                self.set_bit_data(2, data);
+                let res = self.set_bit_data(2, data);
+                self.mmu.write(addr, res, self.pc);
                 16
             }
             0xE6 => {
                 let addr = self.registers.get_hl();
                 let data = self.mmu.read(addr);
-                self.set_bit_data(4, data);
+                let res = self.set_bit_data(4, data);
+                self.mmu.write(addr, res, self.pc);
                 16
             }
             0xF6 => {
                 let addr = self.registers.get_hl();
                 let data = self.mmu.read(addr);
-                self.set_bit_data(6, data);
+                let res = self.set_bit_data(6, data);
+                self.mmu.write(addr, res, self.pc);
                 16
             }
             0xC7 => {
@@ -238,25 +242,29 @@ impl Cpu {
             0xCE => {
                 let addr = self.registers.get_hl();
                 let data = self.mmu.read(addr);
-                self.set_bit_data(1, data);
+                let res = self.set_bit_data(1, data);
+                self.mmu.write(addr, res, self.pc);
                 16
             }
             0xDE => {
                 let addr = self.registers.get_hl();
                 let data = self.mmu.read(addr);
-                self.set_bit_data(3, data);
+                let res = self.set_bit_data(3, data);
+                self.mmu.write(addr, res, self.pc);
                 16
             }
             0xEE => {
                 let addr = self.registers.get_hl();
                 let data = self.mmu.read(addr);
-                self.set_bit_data(5, data);
+                let res = self.set_bit_data(5, data);
+                self.mmu.write(addr, res, self.pc);
                 16
             }
             0xFE => {
                 let addr = self.registers.get_hl();
                 let data = self.mmu.read(addr);
-                self.set_bit_data(7, data);
+                let res = self.set_bit_data(7, data);
+                self.mmu.write(addr, res, self.pc);
                 16
             }
             0xCF => {

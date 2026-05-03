@@ -26,6 +26,9 @@ impl Cpu {
         if b7 == 1 {
             f |= 1 << 4;
         }
+        if res == 0 {
+            f |= 1 << 7;
+        }
         self.registers.set(Register::F, f);
         res
     }
@@ -53,6 +56,9 @@ impl Cpu {
         if b7 == 1 {
             f |= 1 << 4;
         }
+        if res == 0 {
+            f |= 1 << 7;
+        }
         self.registers.set(Register::F, f);
         res
     }
@@ -74,7 +80,7 @@ impl Cpu {
     pub fn rotate_right_accum(&mut self) {
         let a = self.registers.get(Register::A);
         let f = self.registers.get(Register::F);
-        let b0 = (a >> 7) & 1;
+        let b0 = a & 1;
 
         let res = (a >> 1) | (((f >> 4) & 1) << 7);
         self.registers.set(Register::A, res);

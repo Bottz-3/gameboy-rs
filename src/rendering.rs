@@ -1,3 +1,4 @@
+use crate::cpu::Cpu;
 use pixels::{Pixels, SurfaceTexture};
 use std::sync::Arc;
 use winit::{
@@ -10,12 +11,20 @@ use winit::{
 const WIDTH: u32 = 160;
 const HEIGHT: u32 = 144;
 
-#[derive(Default)]
 pub struct App {
-    window: Option<Arc<Window>>,
-    pixels: Option<Pixels<'static>>,
+    pub window: Option<Arc<Window>>,
+    pub pixels: Option<Pixels<'static>>,
+    pub cpu: Cpu,
 }
-
+fn shade_to_rgba(shade: u8) -> [u8; 4] {
+    match shade {
+        0 => [0xFF, 0xFF, 0xFF, 0xFF], // white
+        1 => [0xAA, 0xAA, 0xAA, 0xFF], // light gray
+        2 => [0x55, 0x55, 0x55, 0xFF], // dark gray
+        3 => [0x00, 0x00, 0x00, 0xFF], // black
+        _ => [0xFF, 0xFF, 0xFF, 0xFF],
+    }
+}
 impl ApplicationHandler for App {
     fn resumed(&mut self, event_loop: &ActiveEventLoop) {
         let window = Arc::new(
@@ -49,11 +58,11 @@ impl ApplicationHandler for App {
                 if let Some(pixels) = &mut self.pixels {
                     let frame = pixels.frame_mut();
 
-                    for spot in frame.chunks_exact_mut(4) {
-                        spot[0] = 0x20;
-                        spot[1] = 0x40;
-                        spot[2] = 0xFF;
-                        spot[3] = 0xFF;
+                    for (i, pixel) in frame.chunks_exact_mut(4).enumerate() {
+                        let x = i % 160;
+                        let y = i / 160;
+                        let shade = self.cpu.mmu.ppu.framebuffer[y][x];
+                        pixel.copy_from_slice(&shade_to_rgba(shade));
                     }
                     pixels.render().unwrap();
                 }
@@ -62,6 +71,11 @@ impl ApplicationHandler for App {
         }
     }
     fn about_to_wait(&mut self, _: &ActiveEventLoop) {
+        let mut cycles = 0;
+        while cycles < 70224 {
+            self.cpu.gb_loop();
+            cycles += 4;
+        }
         self.window
             .as_ref()
             .expect("PANIC: Window should exist")

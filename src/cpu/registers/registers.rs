@@ -11,14 +11,14 @@ pub enum Register {
 }
 
 pub struct Registers {
-    pub(super) a: u8,
-    pub(super) b: u8,
-    pub(super) c: u8,
-    pub(super) d: u8,
-    pub(super) e: u8,
-    pub(super) f: u8,
-    pub(super) h: u8,
-    pub(super) l: u8,
+    pub a: u8,
+    pub b: u8,
+    pub c: u8,
+    pub d: u8,
+    pub e: u8,
+    pub f: u8,
+    pub h: u8,
+    pub l: u8,
 }
 #[derive(Copy, Clone)]
 pub enum Register16 {
@@ -49,7 +49,12 @@ impl Registers {
             Register::C => self.c = val,
             Register::D => self.d = val,
             Register::E => self.e = val,
-            Register::F => self.f = val,
+            Register::F => {
+                if val & 0x0F != 0 {
+                    println!("F being set with dirty lower nibble: {:02X}", val);
+                }
+                self.f = val & 0xF0
+            }
             Register::H => self.h = val,
             Register::L => self.l = val,
         }

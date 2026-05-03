@@ -14,6 +14,8 @@ impl Cpu {
         let mut f = self.registers.get(Register::F);
 
         f &= !(1 << 6);
+        f &= !(1 << 5);
+        f &= !(1 << 4);
 
         if (hl & 0xFFF) + (rr & 0xFFF) > 0xFFF {
             f |= 1 << 5;
@@ -36,11 +38,30 @@ impl Cpu {
 
         // just need to do h and c
 
-        if (sp & 0xF) + (val & 0xF) > 0xFF {
+        if (sp & 0xF) + (val & 0xF) > 0xF {
             f |= 1 << 5;
         }
         // c flag
-        if sp as u32 + val as u32 > 0xFF {
+        if (sp & 0xFF) as u32 + (val & 0xFF) as u32 > 0xFF {
+            f |= 1 << 4;
+        }
+        self.registers.set(Register::F, f)
+    }
+    pub fn add_sp_hl(&mut self, e: i8) {
+        let sp = self.sp;
+        let val = (e as i16) as u16;
+        self.registers.set_hl(sp.wrapping_add(val));
+        // set flags
+        // set n to 0
+        let mut f: u8 = 0;
+
+        // just need to do h and c
+
+        if (sp & 0xF) + (val & 0xF) > 0xF {
+            f |= 1 << 5;
+        }
+        // c flag
+        if (sp & 0xFF) as u32 + (val & 0xFF) as u32 > 0xFF {
             f |= 1 << 4;
         }
         self.registers.set(Register::F, f)

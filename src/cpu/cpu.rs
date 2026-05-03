@@ -8,19 +8,45 @@ pub struct Cpu {
     pub sp: u16,
     pub ime: bool,
     pub halted: bool,
+    pub ime_delay: u8,
+    pub pc_history: [u16; 20],
+    pub pc_history_idx: usize,
 }
-
+impl Cpu {
+    pub fn new(mmu: Mmu) -> Self {
+        Cpu {
+            registers: Registers {
+                a: 0x01,
+                f: 0xB0 & 0xF0,
+                b: 0x00,
+                c: 0x13,
+                d: 0x00,
+                e: 0xD8,
+                h: 0x01,
+                l: 0x4D,
+            },
+            pc: 0x0100,
+            sp: 0xFFFE,
+            pc_history: [0; 20],
+            pc_history_idx: 0,
+            mmu,
+            ime: false,
+            halted: false,
+            ime_delay: 0,
+        }
+    }
+}
 impl Cpu {
     pub fn fetch_u8(&mut self) -> u8 {
         let data = self.mmu.read(self.pc);
-        self.pc += 1;
+        self.pc = self.pc.wrapping_add(1);
         data
     }
     pub fn fetch_u16(&mut self) -> u16 {
         let lsb = self.mmu.read(self.pc) as u16;
-        self.pc += 1;
+        self.pc = self.pc.wrapping_add(1);
         let msb = self.mmu.read(self.pc) as u16;
-        self.pc += 1;
+        self.pc = self.pc.wrapping_add(1);
         (msb << 8) | lsb
     }
     pub fn get16(&mut self, reg: Register16) -> u16 {

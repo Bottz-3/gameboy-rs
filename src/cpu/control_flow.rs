@@ -1,24 +1,28 @@
-use crate::cpu::Cpu;
+use crate::cpu::{Cpu, Register};
 
 impl Cpu {
     pub fn jump(&mut self) {
-        self.pc = self.fetch_u16();
+        let nn = self.fetch_u16();
+        if nn >= 0xDF00 && nn <= 0xDFFF {
+            println!("JP to {:04X} from PC {:04X}", nn, self.pc);
+        }
+        self.pc = nn;
     }
     pub fn jump_conditional(&mut self, cond: bool) -> u32 {
+        let nn = self.fetch_u16();
         if cond {
-            self.pc = self.fetch_u16();
+            self.pc = nn;
             return 16;
         }
         12
     }
     pub fn jump_relative(&mut self) {
-        let e = self.mmu.read(self.pc) as i8;
-        self.pc += 1;
+        let e = self.fetch_u8() as i8;
         self.pc = self.pc.wrapping_add_signed(e as i16);
     }
     pub fn jump_relative_conditional(&mut self, cond: bool) -> u32 {
         let e = self.mmu.read(self.pc) as i8;
-        self.pc += 1;
+        self.pc = self.pc.wrapping_add(1);
         if cond {
             self.pc = self.pc.wrapping_add_signed(e as i16);
             return 12;
@@ -29,15 +33,9 @@ impl Cpu {
 // Call and call cond
 impl Cpu {
     pub fn call(&mut self) {
-        let nn = self.fetch_u16();
-        self.sp -= 1;
-
-        let msb = (self.pc >> 8) as u8;
-        let lsb = (self.pc & 0xFF) as u8;
-
-        self.mmu.write(self.sp, msb);
-        self.sp -= 1;
-        self.mmu.write(self.sp, lsb);
+        let nn = self.fetch_u16(); // fetch target
+        let ret_addr = self.pc; // THIS is correct return address
+        self.push_u16(ret_addr);
         self.pc = nn;
     }
 
@@ -45,15 +43,8 @@ impl Cpu {
         let nn = self.fetch_u16();
 
         if cond {
-            self.sp -= 1;
-            let msb = (self.pc >> 8) as u8;
-            let lsb = (self.pc & 0xFF) as u8;
-
-            self.mmu.write(self.sp, msb);
-            self.sp -= 1;
-            self.mmu.write(self.sp, lsb);
+            self.push_u16(self.pc);
             self.pc = nn;
-
             return 24;
         }
         12
@@ -63,19 +54,13 @@ impl Cpu {
 // Return
 impl Cpu {
     pub fn ret(&mut self) {
-        let lsb = self.mmu.read(self.sp) as u16;
-        self.sp += 1;
-        let msb = self.mmu.read(self.sp) as u16;
-        self.sp += 1;
-        self.pc = (msb << 8) | lsb;
+        let popped = self.pop_u16();
+
+        self.pc = popped;
     }
     pub fn ret_conditional(&mut self, cond: bool) -> u32 {
         if cond {
-            let lsb = self.mmu.read(self.sp) as u16;
-            self.sp += 1;
-            let msb = self.mmu.read(self.sp) as u16;
-            self.sp += 1;
-            self.pc = (msb << 8) | lsb;
+            self.pc = self.pop_u16();
             return 20;
         }
         8
@@ -89,13 +74,7 @@ impl Cpu {
 // Restart
 impl Cpu {
     pub fn restart(&mut self, addr: u16) {
-        self.sp -= 1;
-        let msb = (self.pc >> 8) as u8;
-        let lsb = (self.pc & 0xFF) as u8;
-
-        self.mmu.write(self.sp, msb);
-        self.sp -= 1;
-        self.mmu.write(self.sp, lsb);
+        self.push_u16(self.pc);
         self.pc = addr;
     }
 }

@@ -11,6 +11,7 @@ pub struct Ppu {
     pub ly: u8,
     pub mode: u8,
     pub cycles: u32,
+    vblank_triggered: bool,
 }
 
 impl Ppu {
@@ -25,6 +26,7 @@ impl Ppu {
             ly: 0,
             mode: 0,
             cycles: 0,
+            vblank_triggered: false,
         }
     }
 }
@@ -33,6 +35,7 @@ impl Ppu {
 impl Mmu {
     // Handling background work...
     pub fn load_background(&mut self) {
+        //println!("lcdc: {:08b}, bgp: {:02X}", self.ppu.lcdc, self.ppu.bgp);
         let map0 = &self.vram[0x1800..0x1C00]; // 0x9800-0x9BFF
         let map1 = &self.vram[0x1C00..0x2000]; // 0x9C00-0x9FFF
 
@@ -106,21 +109,25 @@ impl Ppu {
                 if self.cycles >= 204 {
                     self.cycles -= 204;
                     self.ly += 1;
-                    if self.ly > 144 {
+                    if self.ly == 144 {
                         self.mode = 1; //vblank
-                        vblank = true;
+                        if !self.vblank_triggered {
+                            self.vblank_triggered = true;
+                            return true;
+                        }
                     } else {
                         self.mode = 2;
                     }
                 }
             }
-            4 => {
+            1 => {
                 if self.cycles >= 456 {
                     self.cycles -= 456;
                     self.ly += 1;
                     if self.ly > 153 {
                         self.ly = 0;
                         self.mode = 2;
+                        self.vblank_triggered = false;
                     }
                 }
             }

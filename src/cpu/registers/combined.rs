@@ -39,6 +39,6 @@ impl Registers {
     }
     pub fn set_af(&mut self, val: u16) {
         self.a = (val >> 8) as u8;
-        self.f = (val & 0xFF) as u8;
+        self.f = (val & 0xFF) as u8 & 0xF0;
     }
 }

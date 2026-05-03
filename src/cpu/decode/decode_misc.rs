@@ -38,23 +38,27 @@ impl Cpu {
             // indirect(?) loads
             0x02 => {
                 let addr = self.registers.get_bc();
-                self.mmu.write(addr, self.registers.get(Register::A));
+                self.mmu
+                    .write(addr, self.registers.get(Register::A), self.pc);
                 8
             }
             0x12 => {
                 let addr = self.registers.get_de();
-                self.mmu.write(addr, self.registers.get(Register::A));
+                self.mmu
+                    .write(addr, self.registers.get(Register::A), self.pc);
                 8
             }
             0x22 => {
                 let addr = self.registers.get_hl();
-                self.mmu.write(addr, self.registers.get(Register::A));
+                self.mmu
+                    .write(addr, self.registers.get(Register::A), self.pc);
                 self.registers.set_hl(addr.wrapping_add(1));
                 8
             }
             0x32 => {
                 let addr = self.registers.get_hl();
-                self.mmu.write(addr, self.registers.get(Register::A));
+                self.mmu
+                    .write(addr, self.registers.get(Register::A), self.pc);
                 self.registers.set_hl(addr.wrapping_sub(1));
                 8
             }
@@ -101,7 +105,7 @@ impl Cpu {
                 let addr = self.registers.get_hl();
                 let reg_val = self.mmu.read(addr);
                 let increment = self.increment(reg_val);
-                self.mmu.write(addr, increment);
+                self.mmu.write(addr, increment, self.pc);
                 12
             }
             // 8-bit decrements
@@ -127,7 +131,7 @@ impl Cpu {
                 let addr = self.registers.get_hl();
                 let reg_val = self.mmu.read(addr);
                 let decrement = self.decrement(reg_val);
-                self.mmu.write(addr, decrement);
+                self.mmu.write(addr, decrement, self.pc);
                 4
             }
             0x06 => {
@@ -148,7 +152,7 @@ impl Cpu {
             0x36 => {
                 let addr = self.registers.get_hl();
                 let data = self.fetch_u8();
-                self.mmu.write(addr, data);
+                self.mmu.write(addr, data, self.pc);
                 12
             }
             0x07 => {
@@ -169,8 +173,8 @@ impl Cpu {
             }
             0x08 => {
                 let addr = self.fetch_u16();
-                self.mmu.write(addr, (self.sp & 0xFF) as u8);
-                self.mmu.write(addr + 1, (self.sp >> 8) as u8);
+                self.mmu.write(addr, (self.sp & 0xFF) as u8, self.pc);
+                self.mmu.write(addr + 1, (self.sp >> 8) as u8, self.pc);
                 20
             }
             0x18 => {

@@ -15,7 +15,8 @@ impl Cpu {
             // LDH [a8], A
             0xE0 => {
                 let addr: u16 = 0xFF00 + self.fetch_u8() as u16;
-                self.mmu.write(addr, self.registers.get(Register::A));
+                self.mmu
+                    .write(addr, self.registers.get(Register::A), self.pc);
                 12
             }
             0xF0 => {
@@ -50,7 +51,8 @@ impl Cpu {
             }
             0xE2 => {
                 let addr: u16 = 0xFF00 + self.registers.get(Register::C) as u16;
-                self.mmu.write(addr, self.registers.get(Register::A));
+                self.mmu
+                    .write(addr, self.registers.get(Register::A), self.pc);
                 8
             }
             0xF2 => {
@@ -65,6 +67,7 @@ impl Cpu {
             }
             0xF3 => {
                 self.ime = false;
+                self.ime_delay = 0;
                 4
             }
             0xC4 => {
@@ -141,9 +144,8 @@ impl Cpu {
                 16
             }
             0xF8 => {
-                let e = self.fetch_u8() as i8;
-                let val = self.sp.wrapping_add_signed(e as i16);
-                self.set16(Register16::HL, val);
+                let data = self.fetch_u8();
+                self.add_sp_hl(data as i8);
                 12
             }
             0xC9 => {
@@ -172,7 +174,8 @@ impl Cpu {
             }
             0xEA => {
                 let addr = self.fetch_u16();
-                self.mmu.write(addr, self.registers.get(Register::A));
+                self.mmu
+                    .write(addr, self.registers.get(Register::A), self.pc);
                 16
             }
             0xFA => {
@@ -183,11 +186,10 @@ impl Cpu {
             }
             0xCB => {
                 let next_op = self.fetch_u8();
-                self.decode_cb(next_op);
-                4
+                self.decode_cb(next_op)
             }
             0xFB => {
-                self.ime = true;
+                self.ime_delay = 2;
                 4
             }
             0xCC => {
@@ -235,11 +237,20 @@ impl Cpu {
                 16
             }
             0xFF => {
+                println!("RST38 executed at PC: {:04X} SP: {:04X}", self.pc - 1, self.sp);
                 self.restart(0x38);
                 16
-            }
+                },
+                0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD => {
+                    println!("Unused opcode {:02X} at PC {:04X}", opcode, self.pc.wrapping_sub(1));
+                    4
+                }
 
-            _ => panic!("CATASTROPHIC ERROR! OPCODE NOT IN THIS RANGE SHOULD NOT RUN HERE AT ALL!"),
+            _ => panic!(
+                "CATASTROPHIC ERROR IN DECODE_CONTROL_FLOW! OPCODE NOT IN THIS RANGE SHOULD NOT RUN HERE AT ALL!
+                OP CODE IS {}",
+                opcode
+            ),
         }
     }
 }
