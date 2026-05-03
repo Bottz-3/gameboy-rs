@@ -7,6 +7,8 @@ pub struct Ppu {
     pub lcdc: u8,
     pub scx: u8,
     pub scy: u8,
+    pub wx: u8,
+    pub wy: u8,
     pub bgp: u8,
     pub ly: u8,
     pub mode: u8,
@@ -22,6 +24,8 @@ impl Ppu {
             lcdc: 0,
             scx: 0,
             scy: 0,
+            wx: 7,
+            wy: 0,
             bgp: 0,
             ly: 0,
             mode: 0,
@@ -35,7 +39,6 @@ impl Ppu {
 impl Mmu {
     // Handling background work...
     pub fn load_background(&mut self) {
-        //println!("lcdc: {:08b}, bgp: {:02X}", self.ppu.lcdc, self.ppu.bgp);
         let map0 = &self.vram[0x1800..0x1C00]; // 0x9800-0x9BFF
         let map1 = &self.vram[0x1C00..0x2000]; // 0x9C00-0x9FFF
 
@@ -90,7 +93,7 @@ impl Mmu {
 impl Ppu {
     pub fn step(&mut self, cycles: u32) -> bool {
         self.cycles += cycles;
-        let mut vblank = false;
+        let vblank = false;
         match self.mode {
             2 => {
                 if self.cycles >= 80 {
@@ -134,5 +137,68 @@ impl Ppu {
             _ => {}
         }
         vblank
+    }
+}
+
+impl Mmu {
+    pub fn render_window(&mut self) {
+        let window_enabled = ((self.ppu.lcdc >> 5) & 1) == 1;
+        let bg_enabled = (self.ppu.lcdc & 1) == 1;
+        if !(window_enabled && bg_enabled) {
+            return;
+        }
+
+        let map0 = &self.vram[0x1800..0x1C00]; // 0x9800-0x9BFF
+        let map1 = &self.vram[0x1C00..0x2000]; // 0x9C00-0x9FFF
+        let map = if ((self.ppu.lcdc >> 6) & 1) == 1 {
+            map1
+        } else {
+            map0
+        };
+        let signed_mode = ((self.ppu.lcdc >> 4) & 1) == 0;
+
+        let wx = self.ppu.wx.saturating_sub(7);
+
+        for y in 0..144 {
+            if y < self.ppu.wy {
+                continue;
+            }
+            for x in 0..160 {
+                if x + 7 < self.ppu.wx {
+                    continue;
+                }
+                let win_x = x - wx;
+                let win_y = y - self.ppu.wy;
+
+                let tile_x = (win_x / 8) as usize; // FIX maybe: OOB access??
+                let tile_y = (win_y / 8) as usize;
+
+                let index = map[tile_y * 32 + tile_x];
+
+                let tile_addr = if !signed_mode {
+                    (index as usize) * 16
+                } else {
+                    let i = index as i8 as i16;
+                    (0x1000_i16 + i * 16) as usize
+                };
+
+                let pixel_x = win_x % 8;
+                let pixel_y = win_y % 8;
+
+                let byte1 = self.vram[tile_addr + pixel_y as usize * 2];
+                let byte2 = self.vram[tile_addr + pixel_y as usize * 2 + 1];
+
+                let bit = 7 - pixel_x;
+                let lo = (byte1 >> bit) & 1;
+                let hi = (byte2 >> bit) & 1;
+
+                let color_id = (hi << 1) | lo;
+
+                // mapping to colour
+                let shade = (self.ppu.bgp >> (color_id * 2)) & 0b11;
+
+                self.ppu.framebuffer[y as usize][x as usize] = shade;
+            }
+        }
     }
 }

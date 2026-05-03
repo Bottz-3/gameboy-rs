@@ -1,4 +1,4 @@
-use crate::cpu::{Cpu, Register};
+use crate::cpu::Cpu;
 
 impl Cpu {
     pub fn gb_loop(&mut self) {
@@ -23,11 +23,11 @@ impl Cpu {
         if self.mmu.timer.step(cycles) {
             let if_ = self.mmu.read(0xFF0F);
             self.mmu.write(0xFF0F, if_ | 0x04, self.pc);
-            println!("Timer IF set, PC={:04X}", self.pc);
         }
 
         if self.mmu.ppu.step(cycles) {
             self.mmu.load_background();
+            self.mmu.render_window();
             let if_ = self.mmu.read(0xFF0F);
             self.mmu.write(0xFF0F, if_ | 0x01, self.pc);
         }

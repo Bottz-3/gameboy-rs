@@ -80,6 +80,8 @@ impl Mmu {
             0xFF43 => self.ppu.scx,
             0xFF44 => self.ppu.ly,
             0xFF47 => self.ppu.bgp,
+            0xFF4B => self.ppu.wx,
+            0xFF4A => self.ppu.wy,
             0xFF0F => self.if_,
             _ => 0xFF,
         }
@@ -105,6 +107,8 @@ impl Mmu {
             0xFF42 => self.ppu.scy = val,
             0xFF43 => self.ppu.scx = val,
             0xFF44 => self.ppu.ly = 1,
+            0xFF4B => self.ppu.wx = val,
+            0xFF4A => self.ppu.wy = val,
             0xFF0F => {
                 self.if_ = val;
             }
