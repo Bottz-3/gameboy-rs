@@ -28,6 +28,7 @@ impl Cpu {
         if self.mmu.ppu.step(cycles) {
             self.mmu.load_background();
             self.mmu.render_window();
+            self.mmu.render_sprites();
             let if_ = self.mmu.read(0xFF0F);
             self.mmu.write(0xFF0F, if_ | 0x01, self.pc);
         }

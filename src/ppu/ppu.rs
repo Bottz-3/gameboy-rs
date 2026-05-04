@@ -202,3 +202,65 @@ impl Mmu {
         }
     }
 }
+
+impl Mmu {
+    pub fn render_sprites(&mut self) {
+        let sprite_size: u8 = if ((self.ppu.lcdc >> 2) & 1) == 1 {
+            16
+        } else {
+            8
+        };
+
+        for i in 0..40 {
+            let base = i * 4;
+            let sy = self.ppu.oam[base].wrapping_sub(16);
+            let sx = self.ppu.oam[base + 1].wrapping_sub(8);
+            let tile_index = self.ppu.oam[base + 2];
+            let flags = self.ppu.oam[base + 3];
+
+            let priority = (flags >> 7) & 1 == 1;
+
+            let y_flip = (flags >> 6) & 1 == 1;
+            let x_flip = (flags >> 5) & 1 == 1;
+
+            let palette = if (flags >> 4) & 1 == 1 {
+                self.obp1
+            } else {
+                self.obp0
+            };
+
+            for row in 0..sprite_size {
+                let py = sy.wrapping_add(row);
+                if py >= 144 {
+                    continue;
+                }
+
+                let tile_row = if y_flip { sprite_size - 1 - row } else { row };
+                let byte1 = self.vram[(tile_index as usize) * 16 + tile_row as usize * 2];
+                let byte2 = self.vram[(tile_index as usize) * 16 + tile_row as usize * 2 + 1];
+
+                for col in 0..8_u8 {
+                    let px = sx.wrapping_add(col);
+                    if px >= 160 {
+                        continue;
+                    }
+                    let bit = if x_flip { col } else { 7 - col };
+
+                    let lo = (byte1 >> bit) & 1;
+                    let hi = (byte2 >> bit) & 1;
+                    // need to check if naming is consistent
+                    let color_id = (hi << 1) | lo;
+
+                    if color_id == 0 {
+                        continue;
+                    }
+                    if priority && self.ppu.framebuffer[py as usize][px as usize] != 0 {
+                        continue;
+                    }
+                    let shade = (palette >> (color_id * 2)) & 0b11;
+                    self.ppu.framebuffer[py as usize][px as usize] = shade;
+                }
+            }
+        }
+    }
+}
