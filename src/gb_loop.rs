@@ -22,7 +22,7 @@ impl Cpu {
         }
         if self.mmu.timer.step(cycles) {
             let if_ = self.mmu.read(0xFF0F);
-            self.mmu.write(0xFF0F, if_ | 0x04, self.pc);
+            self.mmu.write(0xFF0F, if_ | 0x04);
         }
 
         if self.mmu.ppu.step(cycles) {
@@ -30,7 +30,7 @@ impl Cpu {
             self.mmu.render_window();
             self.mmu.render_sprites();
             let if_ = self.mmu.read(0xFF0F);
-            self.mmu.write(0xFF0F, if_ | 0x01, self.pc);
+            self.mmu.write(0xFF0F, if_ | 0x01);
         }
         self.handle_interrupts();
     }

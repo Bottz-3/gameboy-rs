@@ -1,4 +1,3 @@
-use crate::cpu::Cpu;
 use crate::mmu::mmu::Mmu;
 
 pub struct Ppu {

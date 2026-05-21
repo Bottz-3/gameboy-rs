@@ -103,28 +103,28 @@ impl Cpu {
                 let addr = self.registers.get_hl();
                 let data = self.mmu.read(addr);
                 let rot = self.rotate_left_circular_data(data);
-                self.mmu.write(addr, rot, self.pc);
+                self.mmu.write(addr, rot);
                 16
             }
             0x16 => {
                 let addr = self.registers.get_hl();
                 let data = self.mmu.read(addr);
                 let rot = self.rotate_left_data(data);
-                self.mmu.write(addr, rot, self.pc);
+                self.mmu.write(addr, rot);
                 16
             }
             0x26 => {
                 let addr = self.registers.get_hl();
                 let data = self.mmu.read(addr);
                 let shift = self.shift_left_arith_data(data);
-                self.mmu.write(addr, shift, self.pc);
+                self.mmu.write(addr, shift);
                 16
             }
             0x36 => {
                 let addr = self.registers.get_hl();
                 let data = self.mmu.read(addr);
                 let swap = self.swap_nibbles_data(data);
-                self.mmu.write(addr, swap, self.pc);
+                self.mmu.write(addr, swap);
                 16
             }
             0x07 => {
@@ -243,28 +243,28 @@ impl Cpu {
                 let addr = self.registers.get_hl();
                 let data = self.mmu.read(addr);
                 let rot = self.rotate_right_circular_data(data);
-                self.mmu.write(addr, rot, self.pc);
+                self.mmu.write(addr, rot);
                 16
             }
             0x1E => {
                 let addr = self.registers.get_hl();
                 let data = self.mmu.read(addr);
                 let rot = self.rotate_right_data(data);
-                self.mmu.write(addr, rot, self.pc);
+                self.mmu.write(addr, rot);
                 16
             }
             0x2E => {
                 let addr = self.registers.get_hl();
                 let data = self.mmu.read(addr);
                 let shift = self.shift_right_arith_data(data);
-                self.mmu.write(addr, shift, self.pc);
+                self.mmu.write(addr, shift);
                 16
             }
             0x3E => {
                 let addr = self.registers.get_hl();
                 let data = self.mmu.read(addr);
                 let shift = self.shift_right_logical_data(data);
-                self.mmu.write(addr, shift, self.pc);
+                self.mmu.write(addr, shift);
                 16
             }
             0x0F => {

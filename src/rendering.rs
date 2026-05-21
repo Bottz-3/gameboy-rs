@@ -3,8 +3,9 @@ use pixels::{Pixels, SurfaceTexture};
 use std::sync::Arc;
 use winit::{
     application::ApplicationHandler,
-    event::WindowEvent,
-    event_loop::{ActiveEventLoop, ControlFlow},
+    event::{ElementState, WindowEvent},
+    event_loop::ActiveEventLoop,
+    keyboard::{KeyCode, PhysicalKey},
     window::Window,
 };
 
@@ -51,6 +52,30 @@ impl ApplicationHandler for App {
         event: WindowEvent,
     ) {
         match event {
+            WindowEvent::KeyboardInput { event, .. } => {
+                let pressed = event.state == ElementState::Pressed;
+                match event.physical_key {
+                    PhysicalKey::Code(KeyCode::KeyZ) => self.cpu.mmu.joypad.set_action(0, pressed),
+                    PhysicalKey::Code(KeyCode::KeyX) => self.cpu.mmu.joypad.set_action(1, pressed),
+                    PhysicalKey::Code(KeyCode::Enter) => self.cpu.mmu.joypad.set_action(3, pressed),
+                    PhysicalKey::Code(KeyCode::ShiftRight) => {
+                        self.cpu.mmu.joypad.set_action(2, pressed)
+                    }
+                    PhysicalKey::Code(KeyCode::ArrowRight) => {
+                        self.cpu.mmu.joypad.set_direction(0, pressed)
+                    }
+                    PhysicalKey::Code(KeyCode::ArrowLeft) => {
+                        self.cpu.mmu.joypad.set_direction(1, pressed)
+                    }
+                    PhysicalKey::Code(KeyCode::ArrowUp) => {
+                        self.cpu.mmu.joypad.set_direction(2, pressed)
+                    }
+                    PhysicalKey::Code(KeyCode::ArrowDown) => {
+                        self.cpu.mmu.joypad.set_direction(3, pressed)
+                    }
+                    _ => {}
+                }
+            }
             WindowEvent::CloseRequested => {
                 event_loop.exit();
             }

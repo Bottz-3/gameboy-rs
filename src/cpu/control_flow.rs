@@ -1,11 +1,8 @@
-use crate::cpu::{Cpu, Register};
+use crate::cpu::Cpu;
 
 impl Cpu {
     pub fn jump(&mut self) {
         let nn = self.fetch_u16();
-        if nn >= 0xDF00 && nn <= 0xDFFF {
-            println!("JP to {:04X} from PC {:04X}", nn, self.pc);
-        }
         self.pc = nn;
     }
     pub fn jump_conditional(&mut self, cond: bool) -> u32 {
@@ -33,8 +30,8 @@ impl Cpu {
 // Call and call cond
 impl Cpu {
     pub fn call(&mut self) {
-        let nn = self.fetch_u16(); // fetch target
-        let ret_addr = self.pc; // THIS is correct return address
+        let nn = self.fetch_u16();
+        let ret_addr = self.pc;
         self.push_u16(ret_addr);
         self.pc = nn;
     }

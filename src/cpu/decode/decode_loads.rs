@@ -17,8 +17,7 @@ impl Cpu {
             }
             0x70 => {
                 let addr = self.registers.get_hl();
-                self.mmu
-                    .write(addr, self.registers.get(Register::B), self.pc);
+                self.mmu.write(addr, self.registers.get(Register::B));
                 8
             }
             0x41 => {
@@ -35,8 +34,7 @@ impl Cpu {
             }
             0x71 => {
                 let addr = self.registers.get_hl();
-                self.mmu
-                    .write(addr, self.registers.get(Register::C), self.pc);
+                self.mmu.write(addr, self.registers.get(Register::C));
                 8
             }
             0x42 => {
@@ -53,8 +51,7 @@ impl Cpu {
             }
             0x72 => {
                 let addr = self.registers.get_hl();
-                self.mmu
-                    .write(addr, self.registers.get(Register::D), self.pc);
+                self.mmu.write(addr, self.registers.get(Register::D));
                 8
             }
             0x43 => {
@@ -71,8 +68,7 @@ impl Cpu {
             }
             0x73 => {
                 let addr = self.registers.get_hl();
-                self.mmu
-                    .write(addr, self.registers.get(Register::E), self.pc);
+                self.mmu.write(addr, self.registers.get(Register::E));
                 8
             }
             0x44 => {
@@ -89,8 +85,7 @@ impl Cpu {
             }
             0x74 => {
                 let addr = self.registers.get_hl();
-                self.mmu
-                    .write(addr, self.registers.get(Register::H), self.pc);
+                self.mmu.write(addr, self.registers.get(Register::H));
                 8
             }
             0x45 => {
@@ -107,8 +102,7 @@ impl Cpu {
             }
             0x75 => {
                 let addr = self.registers.get_hl();
-                self.mmu
-                    .write(addr, self.registers.get(Register::L), self.pc);
+                self.mmu.write(addr, self.registers.get(Register::L));
                 8
             }
             0x46 => {
@@ -145,7 +139,7 @@ impl Cpu {
             }
             0x77 => {
                 let data = self.registers.get(Register::A);
-                self.mmu.write(self.registers.get_hl(), data, self.pc);
+                self.mmu.write(self.registers.get_hl(), data);
                 8
             }
             0x48 => {

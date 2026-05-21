@@ -8,9 +8,9 @@ impl Cpu {
             //println!("Suspicious push: {:04X} at PC {:04X}", val, self.pc);
         }
         self.sp = self.sp.wrapping_sub(1);
-        self.mmu.write(self.sp, (val >> 8) as u8, self.pc);
+        self.mmu.write(self.sp, (val >> 8) as u8);
         self.sp = self.sp.wrapping_sub(1);
-        self.mmu.write(self.sp, (val & 0xFF) as u8, self.pc);
+        self.mmu.write(self.sp, (val & 0xFF) as u8);
     }
     pub fn pop(&mut self, reg: Register16) {
         let lsb = self.mmu.read(self.sp) as u16;
@@ -39,10 +39,10 @@ impl Cpu {
         let lo = (val & 0xFF) as u8;
 
         self.sp = self.sp.wrapping_sub(1);
-        self.mmu.write(self.sp, hi, self.pc);
+        self.mmu.write(self.sp, hi);
 
         self.sp = self.sp.wrapping_sub(1);
-        self.mmu.write(self.sp, lo, self.pc);
+        self.mmu.write(self.sp, lo);
     }
 
     pub fn pop_u16(&mut self) -> u16 {

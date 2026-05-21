@@ -1,3 +1,4 @@
+use crate::joypad::Joypad;
 use crate::ppu::ppu::Ppu;
 use crate::timer::Timer;
 pub struct Mmu {
@@ -13,6 +14,7 @@ pub struct Mmu {
     pub if_: u8,
     sb: u8,
     sc: u8,
+    pub joypad: Joypad,
 }
 
 impl Mmu {
@@ -30,6 +32,7 @@ impl Mmu {
             ie: 0,
             if_: 0,
             sc: 0,
+            joypad: Joypad::new(),
         }
     }
     pub fn read(&self, addr: u16) -> u8 {
@@ -48,19 +51,16 @@ impl Mmu {
         }
     }
 
-    pub fn write(&mut self, addr: u16, val: u8, pc: u16) {
+    pub fn write(&mut self, addr: u16, val: u8) {
         match addr {
             0x0000..=0x7FFF => {}
             0x8000..=0x9FFF => self.vram[(addr - 0x8000) as usize] = val,
             0xC000..=0xFDFF => {
-                // if addr >= 0xDF00 {
-                //     println!("WRAM write: [{:04X}] = {:02X}", addr, val);
-                // }
                 let idx = (addr - 0xC000) & 0x1FFF;
                 self.wram[idx as usize] = val;
             }
             0xFE00..=0xFE9F => self.ppu.oam[(addr - 0xFE00) as usize] = val,
-            0xFF00..=0xFF7F => self.write_io(addr, val, pc),
+            0xFF00..=0xFF7F => self.write_io(addr, val),
             0xFF80..=0xFFFE => self.hram[(addr - 0xFF80) as usize] = val,
             0xFFFF => self.ie = val,
             _ => {}
@@ -71,7 +71,7 @@ impl Mmu {
 impl Mmu {
     pub fn read_io(&self, addr: u16) -> u8 {
         match addr {
-            0xFF00 => 0xFF,
+            0xFF00 => self.joypad.get_byte(),
             0xFF01 => self.sb,
             0xFF02 => self.sc,
             0xFF04 => self.timer.div,
@@ -92,13 +92,12 @@ impl Mmu {
             _ => 0xFF,
         }
     }
-    pub fn write_io(&mut self, addr: u16, val: u8, pc: u16) {
-        //println!("IO write: {:04X} = {:02X}", addr, val);
+    pub fn write_io(&mut self, addr: u16, val: u8) {
         match addr {
+            0xFF00 => self.joypad.selector = val,
             0xFF01 => self.sb = val,
             0xFF02 => {
                 self.sc = val;
-
                 if val == 0x81 {
                     print!("{}", self.sb as char);
                     use std::io::Write;
@@ -112,6 +111,13 @@ impl Mmu {
             0xFF40 => self.ppu.lcdc = val,
             0xFF42 => self.ppu.scy = val,
             0xFF43 => self.ppu.scx = val,
+            0xFF46 => {
+                let src = (val as u16) << 8;
+                for i in 0..160 {
+                    let byte = self.read(src + i);
+                    self.ppu.oam[i as usize] = byte;
+                }
+            }
             0xFF48 => self.obp0 = val,
             0xFF49 => self.obp1 = val,
             0xFF44 => self.ppu.ly = 1,

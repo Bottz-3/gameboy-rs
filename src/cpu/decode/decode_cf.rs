@@ -16,7 +16,7 @@ impl Cpu {
             0xE0 => {
                 let addr: u16 = 0xFF00 + self.fetch_u8() as u16;
                 self.mmu
-                    .write(addr, self.registers.get(Register::A), self.pc);
+                    .write(addr, self.registers.get(Register::A));
                 12
             }
             0xF0 => {
@@ -52,7 +52,7 @@ impl Cpu {
             0xE2 => {
                 let addr: u16 = 0xFF00 + self.registers.get(Register::C) as u16;
                 self.mmu
-                    .write(addr, self.registers.get(Register::A), self.pc);
+                    .write(addr, self.registers.get(Register::A));
                 8
             }
             0xF2 => {
@@ -175,7 +175,7 @@ impl Cpu {
             0xEA => {
                 let addr = self.fetch_u16();
                 self.mmu
-                    .write(addr, self.registers.get(Register::A), self.pc);
+                    .write(addr, self.registers.get(Register::A));
                 16
             }
             0xFA => {

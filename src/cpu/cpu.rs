@@ -9,8 +9,6 @@ pub struct Cpu {
     pub ime: bool,
     pub halted: bool,
     pub ime_delay: u8,
-    pub pc_history: [u16; 20],
-    pub pc_history_idx: usize,
 }
 impl Cpu {
     pub fn new(mmu: Mmu) -> Self {
@@ -27,8 +25,6 @@ impl Cpu {
             },
             pc: 0x0100,
             sp: 0xFFFE,
-            pc_history: [0; 20],
-            pc_history_idx: 0,
             mmu,
             ime: false,
             halted: false,

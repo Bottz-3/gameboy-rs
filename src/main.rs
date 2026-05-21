@@ -8,19 +8,14 @@ mod cpu;
 mod mmu;
 
 mod gb_loop;
+mod joypad;
 mod ppu;
 mod timer;
-
-struct Gameboy {
-    cpu: Cpu,
-    mmu: Mmu,
-}
 
 fn main() -> Result<(), Box<dyn Error>> {
     let rom = std::fs::read("game.gb").unwrap();
     let mmu = Mmu::new(rom);
     let cpu = Cpu::new(mmu);
-
     let event_loop = EventLoop::new()?;
 
     let mut app = App {
